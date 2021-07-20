@@ -12,5 +12,6 @@
         <Button x:Name="Run" Content="Kör" HorizontalAlignment="Left" Height="30" Width="60" VerticalAlignment="Top" Margin="395,25,0,629" Click="Button_Run_Click"/>
         <Button x:Name="Save" Content="Spara" HorizontalAlignment="Left" Height="30" Width="80" VerticalAlignment="Top" Click="Button_Save_Click" Margin="395,625,0,29"/>
         <ListBox x:Name="Output_Listbox" HorizontalAlignment="Left" Height="600" Margin="25,70,0,0" VerticalAlignment="Top" Width="300"/>
+        <Label x:Name="SaveResultLabel" Content="" HorizontalAlignment="Left" Height="25" Margin="395,670,0,0" VerticalAlignment="Top" Width="80"/>
     </Grid>
 </Window>

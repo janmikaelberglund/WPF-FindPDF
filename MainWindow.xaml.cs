@@ -34,7 +34,6 @@ namespace WPF_FindPDF
         public MainWindow()
         {
             InitializeComponent();
-            //LoadPreviousSession();
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -45,6 +44,7 @@ namespace WPF_FindPDF
         [STAThread]
         private void Button_Open_Click(object sender, RoutedEventArgs e)
         {
+            SaveResultLabel.Content = "";
             Dialog.Description = "Öppna projektmapp";
             var result = Dialog.ShowDialog();
 
@@ -52,15 +52,23 @@ namespace WPF_FindPDF
             {
                 PathInput.Text = Dialog.SelectedPath;
             }
-
+            if (!Directory.Exists(Dialog.SelectedPath + "\\Beräkningar\\"))
+            {
+                MessageBox.Show($"Mappen Beräkningar hittas inte i {Dialog.SelectedPath}", "Ehe ehe Mojje!");
+                PathInput.Text = "";
+                return;
+            }
         }
 
         private void Button_Run_Click(object sender, RoutedEventArgs e)
         {
+            Output_Listbox.Items.Clear();
+
             if (string.IsNullOrEmpty(path))
             {
                 return;
             }
+            
             PdfList = PdfService.GetPdfList(path + "\\Beräkningar\\");
 
             int count = 0;
@@ -74,20 +82,33 @@ namespace WPF_FindPDF
 
         private void Button_Save_Click(object sender, RoutedEventArgs e)
         {
+            
             if (string.IsNullOrEmpty(path) || PdfList == null)
             {
+                SaveResultLabel.Foreground = new SolidColorBrush(Colors.Red);
+                SaveResultLabel.Content = "Ett fel har inträffat.";
                 return;
             }
-            using (StreamWriter streamWriter = new(System.IO.Path.Combine(path + "\\Berakningar.csv")))
+            try
             {
-                int count = 1;
-                foreach (var pdfFile in PdfList)
+                using (StreamWriter streamWriter = new(System.IO.Path.Combine(path + "\\Beräkningar.csv")))
                 {
-                    string filename = pdfFile.FileName[0..^4];
-                    streamWriter.WriteLine($"{filename},{pdfFile.NumberOfPages},{pdfFile.FullPath},{count}");
-                    count += pdfFile.NumberOfPages;
+                    int count = 1;
+                    foreach (var pdfFile in PdfList)
+                    {
+                        string filename = pdfFile.FileName[0..^4];
+                        streamWriter.WriteLine($"{filename},{pdfFile.NumberOfPages},{pdfFile.FullPath},{count}");
+                        count += pdfFile.NumberOfPages;
+                    }
                 }
+                MessageBox.Show("Filen sparad!");
             }
+            catch (Exception)
+            {
+                SaveResultLabel.Foreground = new SolidColorBrush(Colors.Red);
+                SaveResultLabel.Content = "Ett fel har inträffat.";
+            }
+            
         }
     }
 }
